@@ -68,7 +68,7 @@ bcrypt.compare(req.body.password, user.password, (err, result) =>{
       auth: user.auth, 
       verify: user.isverify
     }
-    const token = jwt.sign(payload, process.env.TOKEN_KEY)
+    const token = jwt.sign(payload, process.env.TOKEN_KEY, {expiresIn: '300s'})
     return res.json({success: true, token : token, message:'Login Successfull'})
   }else {
     return res.json({success: false, message:'Password do not match'})
@@ -140,7 +140,6 @@ router.post('/update/:id',checkAuth.auth,checkAuth.isverified, checkAuth.admin, 
     employee.name = req.body.name;
     employee.email = req.body.email;
     employee.auth = req.body.auth;
-    employee.isverify = req.body.isverify;
       
     employee.save().then(emp => {
     return res.json(employee);
@@ -196,11 +195,6 @@ let transporter = nodemailer.createTransport({
 });
 
 router.post('/add',checkAuth.auth,checkAuth.isverified, checkAuth.admin, (req, res) => {
- 
-   
-   
-
-
   bcrypt.hash(req.body.password, 10 ,(err, hash) => {
     if (err) {
       return res.json({success: false, message:'hasing issue'})
@@ -210,7 +204,6 @@ router.post('/add',checkAuth.auth,checkAuth.isverified, checkAuth.admin, (req, r
         email: req.body.email,
         password: hash,
         auth: req.body.auth, 
-        isverify: req.body.isverify,
       });
        user.save()
       .then((_) =>{
@@ -251,7 +244,7 @@ console.log(token)
     return res.status(403).send("A token is to reset");
   }
   try {
-    const decoded = jwt.verify(token, 'herohamada');
+    const decoded = jwt.verify(token, process.env.TOKEN_KEY);
     console.log(decoded.userId)
     bcrypt.hash(req.body.password, 10 ,(err, hash) => {
       if (err) {
