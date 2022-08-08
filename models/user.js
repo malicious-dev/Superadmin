@@ -14,7 +14,7 @@ const userSchema = new Schema({
   auth:{
     type:String,
     default: "user",
-    enum: ["user", "admin", "superadmin"]
+    enum: ["user", "admin"]
 },
   isverify: {
 type: Boolean,
